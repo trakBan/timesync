@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+import requests, json, subprocess
+
+# http://worldtimeapi.org/api/ip
+# MMDDhhmmYYYY
+
+raw_data = requests.get("http://worldtimeapi.org/api/ip").text
+data = json.loads(raw_data)
+
+datetime = data["datetime"]
+
+day = ""
+minute = ""
+hour = ""
+month = ""
+year = ""
+counter = 0
+
+# Extracting time from the JSON
+for x in datetime:
+
+    if counter == 0 or counter == 1  or counter == 2 or counter == 3:
+        year = year + x
+
+    if counter == 5 or counter == 6:
+        month = month + x
+
+    if counter == 8 or counter == 9:
+        day = day + x
+
+    if counter == 11 or counter == 12:
+        hour = hour + x
+
+    if counter == 14 or counter ==  15:
+        minute = minute + x
+
+    counter += 1
+
+combined = month + day + hour + minute + year
+
+# sudo date {combined}
+subprocess.run(["sudo", "date", combined])
