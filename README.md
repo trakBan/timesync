@@ -4,7 +4,7 @@ Be sure you are in a right directory
 This programm doesnt require any 3rd pary dependecies.
 
 ```
-sudo chmod +x timesync; run sudo python setup.py install
+sudo chmod +x timesync; sudo python setup.py install
 ```
 # How to use?
 Just type timesync in your terminal. You will need sudo privileges!
