@@ -1,11 +1,27 @@
 #!/usr/bin/env python3
-import requests, json, subprocess
+import requests, json 
+from subprocess import PIPE, run
 
 # http://worldtimeapi.org/api/ip
-# MMDDhhmmYYYY
+# MMDDhhmmYYYYi
 
-raw_data = requests.get("http://worldtimeapi.org/api/ip").text
-data = json.loads(raw_data)
+def httperror_assess(e):
+
+    if e in [x for x in range(400, 499)]:
+        print(f"Client Error {e}. Please try again later.")
+                            
+    elif e in [x for x in range(500, 599)]:
+        print(f"Server Error {e}. Please try again later.")
+                                            
+    else:
+        print(f"An error occured with status number of {e}")
+
+try:
+    raw_data = requests.get("http://worldtimeapi.org/api/ip").text
+    data = json.loads(raw_data)
+
+except HTTPError as e:
+    httperror_assess(e.code)
 
 datetime = data["datetime"]
 
@@ -19,30 +35,34 @@ counter = 0
 # Extracting time from the JSON
 for x in datetime:
 
-    if counter in [0, 1, 2, 3]:
+    if counter in (0, 1, 2, 3):
         year += x
 
-    if counter in [5, 6]:
+    if counter in (5, 6):
         month += x
 
-    if counter in [8, 9]:
+    if counter in (8, 9):
         day += x
 
-    if counter in [11, 12]:
+    if counter in (11, 12):
         hour += x
 
-    if counter in [14, 15]:
+    if counter in (14, 15):
         minute += x
 
     counter += 1
 
 combined = month + day + hour + minute + year
 
-print(f"Date in DD/MM/YYYY hour:minute \nTime: {day}/{month}/{year} {hour}:{minute}")
-confirm = input("Do you want to keep this time? [Y/n]: ")
+current_time = run(["date", "+'%d/%m/%Y %R'"], stdout=PIPE, stderr=PIPE, universal_newlines=True)
+current_time = (current_time.stdout).replace("'", "")
 
-if confirm in ["", "  ", "Y", "y", "Yes", "yes"]:
-    subprocess.run(["sudo", "date", combined])
+print(f"\nDate in DD/MM/YYYY hour:minute \n------------------------------ \nYour time:    {current_time}Updated time: {day}/{month}/{year} {hour}:{minute} \n------------------------------")
+
+confirm = input("Do you want to keep the updated time? [Y/n]: ")
+
+if confirm in ("", "  ", "Y", "y", "Yes", "yes"):
+    run(["sudo", "date", combined])
 
 else:
     print("Exiting...")
