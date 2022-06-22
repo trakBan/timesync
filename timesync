@@ -25,39 +25,23 @@ except HTTPError as e:
 
 datetime = data["datetime"]
 
-day = ""
-minute = ""
-hour = ""
-month = ""
-year = ""
-counter = 0
-
 # Extracting time from the JSON
-for x in datetime:
-
-    if counter in (0, 1, 2, 3):
-        year += x
-
-    if counter in (5, 6):
-        month += x
-
-    if counter in (8, 9):
-        day += x
-
-    if counter in (11, 12):
-        hour += x
-
-    if counter in (14, 15):
-        minute += x
-
-    counter += 1
+year = ''.join(datetime[0:4])
+month = ''.join(datetime[5:7])
+day = ''.join(datetime[8:10])
+hour = ''.join(datetime[11:13])
+minute = ''.join(datetime[14:16])
 
 combined = month + day + hour + minute + year
 
 current_time = run(["date", "+'%d/%m/%Y %R'"], stdout=PIPE, stderr=PIPE, universal_newlines=True)
 current_time = (current_time.stdout).replace("'", "")
 
-print(f"\nDate in DD/MM/YYYY hour:minute \n------------------------------ \nYour time:    {current_time}Updated time: {day}/{month}/{year} {hour}:{minute} \n------------------------------")
+print(f"""
+Date in DD/MM/YYYY hour:minute
+------------------------------
+Your time:    {current_time}Updated time: {day}/{month}/{year} {hour}:{minute} 
+------------------------------""")
 
 confirm = input("Do you want to keep the updated time? [Y/n]: ")
 
@@ -66,4 +50,4 @@ if confirm in ("", "  ", "Y", "y", "Yes", "yes"):
 
 else:
     print("Exiting...")
-    quit()
+    raise SystemExit()
